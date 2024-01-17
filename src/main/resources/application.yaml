@@ -1,0 +1,24 @@
+server:
+  port: 8383
+
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/spring
+    username: root
+    password: mariadb
+  jpa :
+    # SQL로그가 나올 때 어떤 DBMS의 문법으로 출력할 것인가?
+    database-platform: org.hibernate.dialect.MariaDB106Dialect
+    hibernate:
+      # DDL을 생성할때 전략
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true  # SQL로그를 줄바꿈해서 가독성 좋게 출력
+    database: mysql # DBMS 계열 설정
+
+logging:
+  level:
+    root: info
+    org.hibernate.SQL: debug
