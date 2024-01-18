@@ -21,6 +21,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/todos")
 public class TodoController {
 
