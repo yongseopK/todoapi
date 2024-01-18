@@ -39,4 +39,18 @@ public class TodoService {
                 .collect(Collectors.toList());
         return TodoListResponseDTO.builder().todos(dtoList).build();
     }
+
+    // 할 일 삭제
+    public TodoListResponseDTO delete(String id) {
+
+        try {
+            todoRepository.deleteById(id);
+        } catch (Exception e) {
+            log.error("id가 존재하지 않아 삭제에 실패했습니다. - ID : {}, error : {}", id, e.getMessage());
+
+            throw new RuntimeException("삭제에 실패했습니다.");
+        }
+
+        return retrieve();
+    }
 }

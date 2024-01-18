@@ -52,4 +52,31 @@ public class TodoController {
 
         return ResponseEntity.ok().body(retrieve);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteTodo(@PathVariable(name = "id") String id) {
+
+        log.info("/api/todos/{} DELETE", id);
+
+        if(id == null || id.trim().isEmpty()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(TodoListResponseDTO
+                            .builder()
+                            .error("ID는 공백일 수 없습니다.")
+                            .build());
+        }
+
+        try {
+            TodoListResponseDTO dtoList = todoService.delete(id);
+            return ResponseEntity.ok().body(dtoList);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .internalServerError()
+                    .body(TodoListResponseDTO
+                            .builder()
+                            .error(e.getMessage())
+                            .build());
+        }
+    }
 }
