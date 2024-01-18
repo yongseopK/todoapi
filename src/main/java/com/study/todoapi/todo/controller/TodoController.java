@@ -1,5 +1,6 @@
 package com.study.todoapi.todo.controller;
 
+import com.study.todoapi.todo.dto.request.TodoCheckRequestDTO;
 import com.study.todoapi.todo.dto.request.TodoCreateRequestDTO;
 import com.study.todoapi.todo.dto.rseponse.TodoDetailResponseDTO;
 import com.study.todoapi.todo.dto.rseponse.TodoListResponseDTO;
@@ -12,7 +13,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @Slf4j
@@ -78,5 +82,25 @@ public class TodoController {
                             .error(e.getMessage())
                             .build());
         }
+    }
+
+    // 할 일 완료 체크처리 요청
+    @RequestMapping(method = {PUT, PATCH})
+    public ResponseEntity<?> updateTodo(
+            @RequestBody TodoCheckRequestDTO dto,
+                                        HttpServletRequest request
+    ) {
+
+        log.info("/api/todos {}", request.getMethod());
+        log.debug("dto : {}", dto);
+
+        try {
+            TodoListResponseDTO dtoList = todoService.check(dto);
+            return ResponseEntity.ok().body(dtoList);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(TodoListResponseDTO.builder().error(e.getMessage()).build());
+        }
+
     }
 }
