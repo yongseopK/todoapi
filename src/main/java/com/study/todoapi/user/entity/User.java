@@ -1,5 +1,6 @@
 package com.study.todoapi.user.entity;
 
+import com.study.todoapi.todo.entity.Todo;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -7,6 +8,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -38,6 +41,10 @@ public class User {
     private LocalDateTime joinDate;
 
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("'COMMON'")
-    private Role role;
+    //@ColumnDefault("'COMMON'")
+    @Builder.Default    // 회원가입시 자동으로 기본값 분리
+    private Role role = Role.COMMON;
+
+    @OneToMany(mappedBy = "user")
+    private List<Todo> todoList = new ArrayList<>();
 }
