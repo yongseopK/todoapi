@@ -13,7 +13,7 @@ import java.util.List;
 
 @Setter
 @Getter
-@ToString
+@ToString(exclude = "todoList")
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
