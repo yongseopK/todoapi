@@ -47,4 +47,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Todo> todoList = new ArrayList<>();
+
+    public void addTodo(Todo todo) {
+        this.todoList.add(todo);
+        todo.setUser(this);
+    }
 }
