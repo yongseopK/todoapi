@@ -1,5 +1,7 @@
 package com.study.todoapi.config;
 
+import com.study.todoapi.filter.JwtAuthFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,9 +10,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
+
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -30,6 +36,9 @@ public class WebSecurityConfig {
                 //.antMatchers("/**").hasRole("ADMIN")
                 .anyRequest().authenticated()   // 나머지 요청은 모두 인증ㄱㄱ
         ;
+
+        // 토큰인증 필터 연결하기
+        http.addFilterAfter(jwtAuthFilter, CorsFilter.class);
 
         return http.build();
     }
