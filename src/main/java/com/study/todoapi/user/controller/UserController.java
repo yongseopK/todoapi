@@ -1,5 +1,6 @@
 package com.study.todoapi.user.controller;
 
+import com.study.todoapi.auth.TokenUserInfo;
 import com.study.todoapi.exception.DuplicatedEmailException;
 import com.study.todoapi.exception.NoRegisteredArgumentsException;
 import com.study.todoapi.user.dto.request.LoginRequestDTO;
@@ -11,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +75,30 @@ public class UserController {
         } catch (RuntimeException e) {
             log.warn(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 일반회원을 프리미엄으로 상승시키는 요청 처리
+    @PutMapping("/promote")
+
+    // 그냥 이 권한을 가진사람만 이 요청을 수행할 수 있고,
+    // 이 권한이 아닌 유저는 강제로 403이 응답됨
+    //@PreAuthorize("hasRole('ROLE_COMMON')")
+    @Secured("ROLE_COMMON")
+    public ResponseEntity<?> promote(
+            @AuthenticationPrincipal TokenUserInfo userInfo
+            ) {
+        log.info("/api/auth/promote PUT");
+
+        try {
+            LoginResponseDTO responseDTO = userService.promoteToPremium(userInfo);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (IllegalStateException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }

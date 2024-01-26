@@ -1,12 +1,14 @@
 package com.study.todoapi.user.service;
 
 import com.study.todoapi.auth.TokenProvider;
+import com.study.todoapi.auth.TokenUserInfo;
 import com.study.todoapi.exception.DuplicatedEmailException;
 import com.study.todoapi.exception.NoRegisteredArgumentsException;
 import com.study.todoapi.user.dto.request.LoginRequestDTO;
 import com.study.todoapi.user.dto.request.UserSignUpRequestDTO;
 import com.study.todoapi.user.dto.response.LoginResponseDTO;
 import com.study.todoapi.user.dto.response.UserSignUpResponseDTO;
+import com.study.todoapi.user.entity.Role;
 import com.study.todoapi.user.entity.User;
 import com.study.todoapi.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +68,25 @@ public class UserService {
 
         // 클라이언트에게 토큰을 발급해서 제공
         return new LoginResponseDTO(user, token);
+    }
+
+    // 등급 업 처리
+    public LoginResponseDTO promoteToPremium(TokenUserInfo userInfo) {
+        User user = userRepository.findByEmail(userInfo.getEmail())
+                .orElseThrow(() -> new NoRegisteredArgumentsException("가입된 회원이 아닙니다."));
+
+        // 이미 프리미엄회원이거나 관리자면 예외발생
+        if(userInfo.getRole() != Role.COMMON) {
+            throw new IllegalStateException("일반회원이 아니면 승급할 수 없습니다.");
+        }
+
+        // 등급 변경
+        user.setRole(Role.PREMIUM);
+        User saved = userRepository.save(user);
+
+        // 토큰을 재발급
+        String token = tokenProvider.createToken(saved);
+        return new LoginResponseDTO(saved, token);
     }
 
 }

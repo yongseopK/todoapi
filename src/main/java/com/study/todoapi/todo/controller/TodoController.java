@@ -9,6 +9,7 @@ import com.study.todoapi.todo.entity.Todo;
 import com.study.todoapi.todo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -36,7 +37,7 @@ public class TodoController {
             @Validated @RequestBody TodoCreateRequestDTO dto,
             BindingResult result
     ) {
-        if(result.hasErrors()) {
+        if (result.hasErrors()) {
             log.warn("DTO검증 에러 : {}", result.getFieldError());
             return ResponseEntity.badRequest().body(result.getFieldError());
         }
@@ -44,6 +45,10 @@ public class TodoController {
         try {
             TodoListResponseDTO dtoList = todoService.create(dto, userInfo.getEmail());
             return ResponseEntity.ok().body(dtoList);
+        } catch (IllegalStateException e) {
+            // 권한에 따른 예외
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError()
@@ -68,7 +73,7 @@ public class TodoController {
 
         log.info("/api/todos/{} DELETE", id);
 
-        if(id == null || id.trim().isEmpty()) {
+        if (id == null || id.trim().isEmpty()) {
             return ResponseEntity
                     .badRequest()
                     .body(TodoListResponseDTO
@@ -94,7 +99,7 @@ public class TodoController {
     @RequestMapping(method = {PUT, PATCH})
     public ResponseEntity<?> updateTodo(
             @RequestBody TodoCheckRequestDTO dto,
-                                        HttpServletRequest request,
+            HttpServletRequest request,
             @AuthenticationPrincipal TokenUserInfo userInfo
     ) {
 
