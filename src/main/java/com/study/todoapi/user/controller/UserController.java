@@ -41,7 +41,7 @@ public class UserController {
 
         log.info("api/auth POST! - {}", dto);
 
-        if (profileImg != null) log.info("file-name : {}", profileImg.getOriginalFilename());
+
 
         if (result.hasErrors()) {
             log.warn(result.toString());
@@ -49,13 +49,21 @@ public class UserController {
         }
 
         try {
-            UserSignUpResponseDTO responseDTO = userService.create(dto);
+            String uploadProfileImagePath = null;
+            if (profileImg != null) {
+                log.info("file-name : {}", profileImg.getOriginalFilename());
+                uploadProfileImagePath = userService.uploadProfileImage(profileImg);
+            };
+            UserSignUpResponseDTO responseDTO = userService.create(dto, uploadProfileImagePath);
             return ResponseEntity.ok().body(responseDTO);
         } catch (NoRegisteredArgumentsException e) {
             log.warn("필수 가입 정보를 전달받지 못했습니다.");
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (DuplicatedEmailException e) {
             log.warn("이메일이 중복되었습니다.");
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            log.warn("파일 업로드 경로가 잘못되었거나 파일 저장에 실패했습니다.");
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
