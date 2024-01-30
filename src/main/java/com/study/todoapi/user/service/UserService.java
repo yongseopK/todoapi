@@ -117,8 +117,17 @@ public class UserService {
         File uploadFile = new File(rootPath + "/" + uniqueFileName);
         originalFile.transferTo(uploadFile);
 
-
         return uniqueFileName;
+    }
+
+    // 로그인한 회원의 프로필 사진 저장 경로를 조회
+    public String getProfilePath(String email) {
+
+        // DB에서 파일명을 조회
+        User user = userRepository.findByEmail(email).orElseThrow();
+        String fileName = user.getProfileImg();
+
+        return rootPath + "/" + fileName;
     }
 }
 

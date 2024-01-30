@@ -17,6 +17,10 @@ spring:
       hibernate:
         format_sql: true  # SQL로그를 줄바꿈해서 가독성 좋게 출력
     database: mysql # DBMS 계열 설정
+  servlet:
+    multipart:
+      max-file-size: 3MB    # 1개의 파일의 최대업로드 사이즈
+      max-request-size: 20MB # 한 번 요청에 들어올 최대 업로드 사이즈
 
 logging:
   level:
