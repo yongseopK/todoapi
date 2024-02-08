@@ -2,6 +2,7 @@ package com.study.todoapi.user.service;
 
 import com.study.todoapi.auth.TokenProvider;
 import com.study.todoapi.auth.TokenUserInfo;
+import com.study.todoapi.aws.S3Service;
 import com.study.todoapi.exception.DuplicatedEmailException;
 import com.study.todoapi.exception.NoRegisteredArgumentsException;
 import com.study.todoapi.user.dto.request.LoginRequestDTO;
@@ -30,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final S3Service s3Service;
 
     @Value("${upload.path}")
     private String rootPath;    // 파일 저장 루트경로
@@ -107,17 +109,21 @@ public class UserService {
     public String uploadProfileImage(MultipartFile originalFile) throws IOException {
 
         // 루트 디렉토리가 존재하는지 확인 후 존재하지 않으면 생성
-        File rootDir = new File(rootPath);
-        if (!rootDir.exists()) rootDir.mkdirs();
+        //File rootDir = new File(rootPath);
+        //if (!rootDir.exists()) rootDir.mkdirs();
 
         // 파일을 유니크하게 변경
         String uniqueFileName = UUID.randomUUID() + "_" + originalFile.getOriginalFilename();
 
         // 파일을 서버에 저장
-        File uploadFile = new File(rootPath + "/" + uniqueFileName);
-        originalFile.transferTo(uploadFile);
+        //File uploadFile = new File(rootPath + "/" + uniqueFileName);
+        //originalFile.transferTo(uploadFile);
 
-        return uniqueFileName;
+        // 파일을 S3버킷에 저장
+        String uploadedURL = s3Service.uploadToS3Bucket(originalFile.getBytes(), uniqueFileName);
+
+        //return uniqueFileName;
+        return uploadedURL;
     }
 
     // 로그인한 회원의 프로필 사진 저장 경로를 조회

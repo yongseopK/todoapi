@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/spring
-    username: root
-    password: mariadb
+    url: # jdbc url작성
+    username: # DB 계정
+    password: # DB 암호
   jpa :
     # SQL로그가 나올 때 어떤 DBMS의 문법으로 출력할 것인가?
     database-platform: org.hibernate.dialect.MariaDB106Dialect
@@ -33,3 +33,12 @@ jwt:
 
 upload:
   path: /Users/yongseopkim/Desktop/spring_prj/upload
+
+
+# s3 setting
+aws:
+  credentials:
+    accessKey: AKIAU6GD2TO4M6DETLZE
+    secretKey: 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
+  region: ap-northeast-2
+  bucketName: spring-todo-api-file-bucket5157
