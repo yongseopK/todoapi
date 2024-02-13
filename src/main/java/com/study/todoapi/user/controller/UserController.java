@@ -132,30 +132,30 @@ public class UserController {
 
             String profilePath = userService.getProfilePath(userInfo.getEmail());
 
-            // 2. 얻어낸 파일경로를 통해 실제 데이터 가져오기
-            File profileFile = new File(profilePath);
-
-            if (!profileFile.exists()) return ResponseEntity.notFound().build();
-
-            // 서버에 저장된 파일을 직렬화하여 바이트배열로 만들어서 가져옴
-            byte[] fileData = FileCopyUtils.copyToByteArray(profileFile);
-
-            // 3. 응답헤더에 이 데이터의 타입이 무엇인지를 설정해야 함.
-            HttpHeaders headers = new HttpHeaders();
-
-            MediaType mediaType = extractFileExtension(profilePath);
-            if (mediaType == null) {
-                return ResponseEntity.internalServerError()
-                        .body("발견된 파일은 이미지가 아닙니다.");
-            }
-
-            headers.setContentType(mediaType);
+            //// 2. 얻어낸 파일경로를 통해 실제 데이터 가져오기
+            //File profileFile = new File(profilePath);
+            //
+            //if (!profileFile.exists()) return ResponseEntity.notFound().build();
+            //
+            //// 서버에 저장된 파일을 직렬화하여 바이트배열로 만들어서 가져옴
+            //byte[] fileData = FileCopyUtils.copyToByteArray(profileFile);
+            //
+            //// 3. 응답헤더에 이 데이터의 타입이 무엇인지를 설정해야 함.
+            //HttpHeaders headers = new HttpHeaders();
+            //
+            //MediaType mediaType = extractFileExtension(profilePath);
+            //if (mediaType == null) {
+            //    return ResponseEntity.internalServerError()
+            //            .body("발견된 파일은 이미지가 아닙니다.");
+            //}
+            //
+            //headers.setContentType(mediaType);
 
             return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(fileData);
+                    //.headers(headers)
+                    .body(profilePath);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
